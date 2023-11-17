@@ -1,6 +1,6 @@
-# Nombre del Proyecto
+# Proyecto de Clase backend
 
-Descripción corta del proyecto.
+Este proyecto fue desarrollado durante todo el semestre.
 
 ## Requisitos Previos
 
@@ -9,7 +9,7 @@ Asegúrate de tener instalados los siguientes requisitos previos antes de contin
 - PHP >= 7.3
 - Composer
 - Node.js y NPM
-- MySQL o cualquier otro sistema de gestión de bases de datos compatible con Laravel
+- MySQL
 
 ## Configuración
 
