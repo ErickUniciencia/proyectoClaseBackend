@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UsuarioController extends Controller
 {
@@ -25,17 +26,21 @@ class UsuarioController extends Controller
     // Crear un nuevo usuario
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'email' => 'required|email|unique:usuarios',
-            'contraseña' => 'required|min:6',
+            'contrasena' => 'required|min:6',
             'rol' => 'required|in:administrador,vendedor',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $usuario = new Usuario();
         $usuario->nombre = $request->input('nombre');
         $usuario->email = $request->input('email');
-        $usuario->contraseña = bcrypt($request->input('contraseña'));
+        $usuario->contrasena = bcrypt($request->input('contrasena'));
         $usuario->rol = $request->input('rol');
         $usuario->save();
 
@@ -49,20 +54,24 @@ class UsuarioController extends Controller
         if (!$usuario) {
             return response()->json(['message' => 'Usuario no encontrado'], 404);
         }
-
-        $this->validate($request, [
+     
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'email' => 'required|email|unique:usuarios,email,' . $usuario->id,
-            'contraseña' => 'min:6',
+            'contrasena' => 'min:6',
             'rol' => 'required|in:administrador,vendedor',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $usuario->nombre = $request->input('nombre');
         $usuario->email = $request->input('email');
 
-        // Actualizar la contraseña si se proporciona en la solicitud
-        if ($request->has('contraseña')) {
-            $usuario->contraseña = bcrypt($request->input('contraseña'));
+        // Actualizar la contrasena si se proporciona en la solicitud
+        if ($request->has('contrasena')) {
+            $usuario->contrasena = bcrypt($request->input('contrasena'));
         }
 
         $usuario->rol = $request->input('rol');

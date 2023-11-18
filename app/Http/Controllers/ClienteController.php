@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Cliente;
-
+use Illuminate\Support\Facades\Validator;
 class ClienteController extends Controller
 {
     public function index()
@@ -26,12 +26,16 @@ class ClienteController extends Controller
     // Crear un nuevo cliente
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'email' => 'required|email',
             'telefono' => 'required|max:20',
             'direccion' => 'required|max:255',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $cliente = new Cliente();
         $cliente->nombre = $request->input('nombre');
@@ -51,12 +55,16 @@ class ClienteController extends Controller
             return response()->json(['message' => 'Cliente no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'email' => 'required|email',
             'telefono' => 'required|max:20',
             'direccion' => 'required|max:255',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $cliente->nombre = $request->input('nombre');
         $cliente->email = $request->input('email');

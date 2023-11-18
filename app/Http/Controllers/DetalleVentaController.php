@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DetalleVenta;
-
+use Illuminate\Support\Facades\Validator;
 class DetalleVentaController extends Controller
 {
     public function index()
@@ -26,12 +26,16 @@ class DetalleVentaController extends Controller
     // Crear un nuevo detalle de venta
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'venta_id' => 'required|exists:ventas,id',
             'producto_id' => 'required|exists:productos,id',
             'cantidad' => 'required|integer',
             'precio_unitario' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $detalleVenta = new DetalleVenta();
         $detalleVenta->venta_id = $request->input('venta_id');
@@ -51,12 +55,16 @@ class DetalleVentaController extends Controller
             return response()->json(['message' => 'Detalle de venta no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'venta_id' => 'required|exists:ventas,id',
             'producto_id' => 'required|exists:productos,id',
             'cantidad' => 'required|integer',
             'precio_unitario' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $detalleVenta->venta_id = $request->input('venta_id');
         $detalleVenta->producto_id = $request->input('producto_id');

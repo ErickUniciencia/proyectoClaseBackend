@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Venta;
-
+use Illuminate\Support\Facades\Validator;
 class VentaController extends Controller
 {
     public function index()
@@ -26,11 +26,16 @@ class VentaController extends Controller
     // Crear una nueva venta
     public function store(Request $request)
     {
-        $this->validate($request, [
+
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'fecha' => 'required|date',
             'total' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $venta = new Venta();
         $venta->cliente_id = $request->input('cliente_id');
@@ -49,11 +54,15 @@ class VentaController extends Controller
             return response()->json(['message' => 'Venta no encontrada'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'fecha' => 'required|date',
             'total' => 'required|numeric',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $venta->cliente_id = $request->input('cliente_id');
         $venta->fecha = $request->input('fecha');

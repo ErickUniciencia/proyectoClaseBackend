@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Actividad;
-
+use Illuminate\Support\Facades\Validator;
 class ActividadController extends Controller
 {
     public function index()
@@ -26,13 +26,17 @@ class ActividadController extends Controller
     // Crear una nueva actividad
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'tipo' => 'required|in:llamada,reunión,correo,otro',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
             'descripcion' => 'required',
             'usuario_id' => 'required|exists:usuarios,id',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $actividad = new Actividad();
         $actividad->cliente_id = $request->input('cliente_id');
@@ -53,13 +57,17 @@ class ActividadController extends Controller
             return response()->json(['message' => 'Actividad no encontrada'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'tipo' => 'required|in:llamada,reunión,correo,otro',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
             'descripcion' => 'required',
             'usuario_id' => 'required|exists:usuarios,id',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $actividad->cliente_id = $request->input('cliente_id');
         $actividad->tipo = $request->input('tipo');

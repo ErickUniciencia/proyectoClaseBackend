@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Contacto;
-
+use Illuminate\Support\Facades\Validator;
 class ContactoController extends Controller
 {
     public function index()
@@ -26,12 +26,16 @@ class ContactoController extends Controller
     // Crear un nuevo contacto
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'nombre' => 'required|max:100',
             'email' => 'required|email',
             'telefono' => 'required|max:20',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $contacto = new Contacto();
         $contacto->cliente_id = $request->input('cliente_id');
@@ -51,12 +55,16 @@ class ContactoController extends Controller
             return response()->json(['message' => 'Contacto no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'nombre' => 'required|max:100',
             'email' => 'required|email',
             'telefono' => 'required|max:20',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $contacto->cliente_id = $request->input('cliente_id');
         $contacto->nombre = $request->input('nombre');

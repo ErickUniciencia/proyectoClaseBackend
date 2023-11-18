@@ -14,11 +14,11 @@ class Usuario extends Model
     protected $fillable = [
         'nombre',
         'email',
-        'contraseña',
+        'contrasena',
         'rol',
     ];
 
     protected $hidden = [
-        'contraseña',
+        'contrasena',
     ];
 }

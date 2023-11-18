@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre', 100);
             $table->string('email', 100)->unique();
-            $table->string('contraseña', 255);
+            $table->string('contrasena', 255);
             $table->enum('rol', ['administrador', 'vendedor']);
             $table->timestamps();
         });

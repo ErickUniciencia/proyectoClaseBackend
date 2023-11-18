@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Oportunidad;
-
+use Illuminate\Support\Facades\Validator;
 class OportunidadController extends Controller
 {
     public function index()
@@ -26,13 +26,17 @@ class OportunidadController extends Controller
     // Crear una nueva oportunidad
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'nombre' => 'required|max:100',
             'estado' => 'required|in:abierto,cerrado,perdido',
             'monto' => 'required|numeric',
             'fecha_creacion' => 'required|date',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $oportunidad = new Oportunidad();
         $oportunidad->cliente_id = $request->input('cliente_id');

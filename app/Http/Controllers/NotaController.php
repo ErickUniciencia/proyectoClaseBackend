@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Nota;
-
+use Illuminate\Support\Facades\Validator;
 class NotaController extends Controller
 {
     public function index()
@@ -26,13 +26,17 @@ class NotaController extends Controller
     // Crear una nueva nota
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'oportunidad_id' => 'required|exists:oportunidades,id',
             'contenido' => 'required',
             'usuario_id' => 'required|exists:usuarios,id',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $nota = new Nota();
         $nota->cliente_id = $request->input('cliente_id');
@@ -53,13 +57,17 @@ class NotaController extends Controller
             return response()->json(['message' => 'Nota no encontrada'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'cliente_id' => 'required|exists:clientes,id',
             'oportunidad_id' => 'required|exists:oportunidades,id',
             'contenido' => 'required',
             'usuario_id' => 'required|exists:usuarios,id',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $nota->cliente_id = $request->input('cliente_id');
         $nota->oportunidad_id = $request->input('oportunidad_id');

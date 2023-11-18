@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\DetalleMovimientoProducto;
-
+use Illuminate\Support\Facades\Validator;
 class DetalleMovimientoProductoController extends Controller
 {
     public function index()
@@ -26,12 +26,16 @@ class DetalleMovimientoProductoController extends Controller
     // Crear un nuevo detalle de movimiento de producto
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'producto_id' => 'required|exists:productos,id',
             'tipo_movimiento' => 'required|in:entrada,salida',
             'cantidad' => 'required|integer',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $detalle = new DetalleMovimientoProducto();
         $detalle->producto_id = $request->input('producto_id');
@@ -51,12 +55,16 @@ class DetalleMovimientoProductoController extends Controller
             return response()->json(['message' => 'Detalle de movimiento de producto no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'producto_id' => 'required|exists:productos,id',
             'tipo_movimiento' => 'required|in:entrada,salida',
             'cantidad' => 'required|integer',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $detalle->producto_id = $request->input('producto_id');
         $detalle->tipo_movimiento = $request->input('tipo_movimiento');

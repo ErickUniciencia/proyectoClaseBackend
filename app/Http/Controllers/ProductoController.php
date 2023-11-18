@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Producto;
-
+use Illuminate\Support\Facades\Validator;
 class ProductoController extends Controller
 {
     public function index()
@@ -26,12 +26,16 @@ class ProductoController extends Controller
     // Crear un nuevo producto
     public function store(Request $request)
     {
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'descripcion' => 'required',
             'precio' => 'required|numeric',
             'existencias' => 'required|integer',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $producto = new Producto();
         $producto->nombre = $request->input('nombre');
@@ -51,12 +55,16 @@ class ProductoController extends Controller
             return response()->json(['message' => 'Producto no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:100',
             'descripcion' => 'required',
             'precio' => 'required|numeric',
             'existencias' => 'required|integer',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $producto->nombre = $request->input('nombre');
         $producto->descripcion = $request->input('descripcion');

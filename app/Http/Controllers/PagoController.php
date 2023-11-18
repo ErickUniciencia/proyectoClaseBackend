@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pago;
+use Illuminate\Support\Facades\Validator;
 class PagoController extends Controller
 {
     public function index()
@@ -24,13 +25,17 @@ class PagoController extends Controller
 
     // Crear un nuevo pago
     public function store(Request $request)
-    {
-        $this->validate($request, [
+    {      
+        $validator = Validator::make($request->all(), [
             'venta_id' => 'required|exists:ventas,id',
             'metodo_pago' => 'required|string|max:50',
             'monto' => 'required|numeric',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $pago = new Pago();
         $pago->venta_id = $request->input('venta_id');
@@ -50,12 +55,16 @@ class PagoController extends Controller
             return response()->json(['message' => 'Pago no encontrado'], 404);
         }
 
-        $this->validate($request, [
+        $validator = Validator::make($request->all(), [
             'venta_id' => 'required|exists:ventas,id',
             'metodo_pago' => 'required|string|max:50',
             'monto' => 'required|numeric',
             'fecha_hora' => 'required|date_format:Y-m-d H:i:s',
         ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
         $pago->venta_id = $request->input('venta_id');
         $pago->metodo_pago = $request->input('metodo_pago');
